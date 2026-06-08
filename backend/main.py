@@ -1,7 +1,15 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from models import Movie
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 movies = [
         {
@@ -34,3 +42,9 @@ def create_movie(movie: Movie):
     movies.append(movie.model_dump())
     return movie
 
+@app.delete("/movies/{title}")
+def delete_movie(title: str):
+    for movie in movies:
+        if title.lower() == movie["title"].lower():
+            movies.remove(movie)
+    return movies
